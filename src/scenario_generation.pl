@@ -97,11 +97,18 @@ sortear_pacientes(Numero, Total, Filas,
     Proximo is Numero + 1,
     sortear_pacientes(Proximo, Total, Novas_Filas, Pacientes).
 
-% 'geral' permanece exclusivo. Condições especiais podem vir em pares.
+% 'geral' permanece exclusivo. Pares devem respeitar as incompatibilidades.
 grupos_candidatos([geral]) :- grupo_critico(geral, _).
 grupos_candidatos([Grupo]) :-
     grupo_critico(Grupo, _), Grupo \== geral.
 grupos_candidatos([Primeiro, Segundo]) :-
     grupo_critico(Primeiro, _), Primeiro \== geral,
     grupo_critico(Segundo, _), Segundo \== geral,
-    Primeiro @< Segundo.
+    Primeiro @< Segundo,
+    \+ grupos_incompativeis(Primeiro, Segundo),
+    \+ grupos_incompativeis(Segundo, Primeiro).
+
+% As duas consultas acima bloqueiam o par independentemente da ordem.
+grupos_incompativeis(gestante, crianca).
+grupos_incompativeis(gestante, idoso).
+grupos_incompativeis(crianca, idoso).
